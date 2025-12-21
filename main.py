@@ -59,8 +59,6 @@ class GroupSigninPlugin(Star):
                     data = json.load(f)
                     self.signin_jobs = data.get('signin_jobs', [])
                     self.statistics = data.get('statistics', self.statistics)
-                    self.notify_on_success = data.get('notify_on_success', True)
-                    self.daily_report_time = data.get('daily_report_time', "00:00:00")
                     self.admin_user_id = data.get('admin_user_id', None)
                 logger.info(f"[GroupSignin] 成功加载数据文件: 定时任务 {len(self.signin_jobs)} 个")
             except Exception as e:
@@ -85,8 +83,6 @@ class GroupSigninPlugin(Star):
             data = {
                 'signin_jobs': self.signin_jobs,
                 'statistics': statistics_to_save,
-                'notify_on_success': self.notify_on_success,
-                'daily_report_time': self.daily_report_time,
                 'admin_user_id': self.admin_user_id
             }
             with open(self.data_file, 'w', encoding='utf-8') as f:
@@ -364,7 +360,7 @@ class GroupSigninPlugin(Star):
             # 检查是否今日已打卡
             if result.get("already_signed"):
                 logger.info(f"[GroupSignin] 群 {group_id} 今日已打卡")
-                yield event.plain_result(f"ℹ️ 今日已打卡\n群号: {group_id}")
+                yield event.plain_result(f"ℹ️ 今日已打卡")
                 return
             
             today = datetime.now().strftime("%Y-%m-%d")
@@ -379,7 +375,7 @@ class GroupSigninPlugin(Star):
             self._save_data()
             
             logger.info(f"[GroupSignin] 群 {group_id} 立即打卡成功")
-            yield event.plain_result(f"✅ 打卡成功\n群号: {group_id}")
+            yield event.plain_result(f"✅ 打卡成功")
         else:
             today = datetime.now().strftime("%Y-%m-%d")
             if today not in self.statistics["daily_stats"]:

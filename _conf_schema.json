@@ -1,0 +1,20 @@
+{
+    "notify_on_success": {
+        "description": "定时任务成功通知",
+        "hint": "开启后，每次定时任务成功执行时都会通知管理员。",
+        "type": "bool",
+        "default": true
+    },
+    "daily_report_time": {
+        "description": "每日打卡报告时间",
+        "hint": "格式: HH:MM (如 18:00)。仅在成功通知关闭时生效。留空表示不启用。",
+        "type": "string",
+        "default": ""
+    },
+    "batch_signin_interval": {
+        "description": "批量打卡间隔秒数",
+        "hint": "一键打卡和定时任务执行时，每个群之间的间隔时间。",
+        "type": "int",
+        "default": 2
+    }
+}

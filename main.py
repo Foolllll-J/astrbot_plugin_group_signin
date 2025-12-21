@@ -13,7 +13,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 
 
-@register("astrbot_plugin_group_signin", "Foolllll", "QQ群打卡插件，支持自动定时打卡和手动打卡", "0.1")
+@register("astrbot_plugin_group_signin", "Foolllll", "QQ群打卡助手，支持自动定时打卡和手动打卡", "1.0")
 class GroupSigninPlugin(Star):
     def __init__(self, context: Context, config: AstrBotConfig):
         super().__init__(context)
@@ -91,7 +91,6 @@ class GroupSigninPlugin(Star):
             }
             with open(self.data_file, 'w', encoding='utf-8') as f:
                 json.dump(data, f, ensure_ascii=False, indent=2)
-            logger.info(f"[GroupSignin] 数据已保存")
         except Exception as e:
             logger.error(f"[GroupSignin] 保存数据失败: {e}")
 
@@ -142,8 +141,6 @@ class GroupSigninPlugin(Star):
 
     async def _perform_group_signin(self, group_id: str) -> dict:
         """执行群打卡操作"""
-        logger.info(f"[GroupSignin] 开始为群 {group_id} 执行打卡操作")
-        
         # 检查今日是否已打卡
         today = datetime.now().strftime("%Y-%m-%d")
         today_signed_groups = self.statistics.get("today_signed_groups", {})
@@ -154,7 +151,6 @@ class GroupSigninPlugin(Star):
             self.statistics["today_signed_groups"] = today_signed_groups
         
         if group_id in today_signed_groups["groups"]:
-            logger.info(f"[GroupSignin] 群 {group_id} 今日已打卡")
             return {"success": True, "message": "今日已打卡", "already_signed": True, "group_id": group_id}
         
         if not self.bot_instance:
@@ -163,12 +159,11 @@ class GroupSigninPlugin(Star):
             return {"success": False, "message": error_msg, "group_id": group_id}
         
         try:
-            logger.info(f"[GroupSignin] 使用 send_group_sign API 为群 {group_id} 打卡")
             result = await self.bot_instance.api.call_action(
                 'send_group_sign',
                 group_id=str(group_id)
             )
-            logger.info(f"[GroupSignin] 群 {group_id} 打卡成功，返回: {result}")
+            logger.info(f"[GroupSignin] 群 {group_id} 打卡成功")
             
             # 记录今日已打卡
             today_signed_groups["groups"].add(group_id)
@@ -350,7 +345,6 @@ class GroupSigninPlugin(Star):
         不提供群号则打卡当前群
         """
         if not event.is_admin():
-            logger.warning(f"[GroupSignin] 非管理员尝试使用立即打卡: {event.get_sender_id()}")
             yield event.plain_result("❌ 此指令仅限Bot管理员使用")
             return
         
@@ -404,7 +398,6 @@ class GroupSigninPlugin(Star):
     async def batch_signin_all(self, event: AstrMessageEvent):
         """对所有设置了定时任务的群组执行一次打卡"""
         if not event.is_admin():
-            logger.warning(f"[GroupSignin] 非管理员尝试使用一键打卡: {event.get_sender_id()}")
             yield event.plain_result("❌ 此指令仅限Bot管理员使用")
             return
         
@@ -440,7 +433,6 @@ class GroupSigninPlugin(Star):
         示例: /添加打卡 09:00 123456789
         """
         if not event.is_admin():
-            logger.warning(f"[GroupSignin] 非管理员尝试添加定时打卡: {event.get_sender_id()}")
             yield event.plain_result("❌ 此指令仅限Bot管理员使用")
             return
         
@@ -515,8 +507,6 @@ class GroupSigninPlugin(Star):
     @filter.command("查看打卡")
     async def list_signin_jobs(self, event: AstrMessageEvent):
         """查看所有定时打卡任务"""
-        logger.info(f"[GroupSignin] 查看定时任务列表")
-        
         if not self.signin_jobs:
             yield event.plain_result("当前没有定时打卡任务")
             return
@@ -524,8 +514,7 @@ class GroupSigninPlugin(Star):
         result = "📋 定时打卡任务列表:\n\n"
         for job in self.signin_jobs:
             result += f"群号: {job['group_id']}\n"
-            result += f"时间: 每日 {job['time']}\n"
-            result += f"创建时间: {job['created_at']}\n\n"
+            result += f"时间: 每日 {job['time']}\n\n"
         
         yield event.plain_result(result)
 
@@ -535,7 +524,6 @@ class GroupSigninPlugin(Star):
         用法: /删除打卡 <群号>
         """
         if not event.is_admin():
-            logger.warning(f"[GroupSignin] 非管理员尝试删除定时打卡: {event.get_sender_id()}")
             yield event.plain_result("❌ 此指令仅限Bot管理员使用")
             return
         
@@ -564,7 +552,6 @@ class GroupSigninPlugin(Star):
             # 从调度器移除
             try:
                 self.scheduler.remove_job(f"signin_{group_id}")
-                logger.info(f"[GroupSignin] 从调度器移除任务: 群 {group_id}")
             except Exception as e:
                 logger.warning(f"[GroupSignin] 从调度器移除任务失败: {e}")
             
@@ -582,8 +569,6 @@ class GroupSigninPlugin(Star):
     @filter.command("打卡统计")
     async def show_statistics(self, event: AstrMessageEvent):
         """查看打卡统计信息"""
-        logger.info(f"[GroupSignin] 查看打卡统计")
-        
         stats = self.statistics
         today = datetime.now().strftime("%Y-%m-%d")
         today_stats = stats.get("daily_stats", {}).get(today, {"total": 0, "success": 0, "fail": 0})
@@ -595,7 +580,14 @@ class GroupSigninPlugin(Star):
         message += f"失败次数: {stats['fail_count']}\n"
         
         if stats.get('last_sign_time'):
-            message += f"上次打卡: {stats['last_sign_time']}\n"
+            # 格式化时间显示
+            try:
+                from datetime import datetime as dt
+                last_time = dt.fromisoformat(stats['last_sign_time'])
+                formatted_time = last_time.strftime("%Y-%m-%d %H:%M:%S")
+                message += f"上次打卡: {formatted_time}\n"
+            except:
+                message += f"上次打卡: {stats['last_sign_time']}\n"
         
         message += f"\n【今日统计 {today}】\n"
         message += f"今日打卡: {today_stats['total']} 次\n"
@@ -613,13 +605,13 @@ class GroupSigninPlugin(Star):
     @filter.command("打卡帮助")
     async def show_help(self, event: AstrMessageEvent):
         """显示帮助信息"""
-        help_text = """📖 群打卡插件使用帮助 v0.1
+        help_text = """📖 QQ群打卡助手使用帮助
 
-🔹 管理员打卡指令
+🔹 打卡指令
 /立即打卡 [群号] - 立即对指定群打卡（不提供群号则打卡当前群）
-/一键打卡 - 对所有设置了定时任务的群组执行一次打卡（可配置间隔防风控）
+/一键打卡 - 对所有设置了定时任务的群组执行一次打卡
 
-🔹 定时打卡管理 (仅管理员)
+🔹 定时打卡管理
 /添加打卡 <时间HH:MM> <群号>
   示例: /添加打卡 09:00 123456789
   说明: 每日固定时间执行，时间格式为24小时制
@@ -631,13 +623,14 @@ class GroupSigninPlugin(Star):
 /打卡统计 - 查看打卡统计数据（包含今日和总计）
 
 💡 特性说明:
+- 所有指令仅限Bot管理员使用
 - 定时任务每日固定时间执行，使用简单的HH:MM格式
 - 每个群只能设置一个定时任务，群号作为唯一标识
-- 一键打卡会自动对所有配置的群组打卡，可在配置文件设置间隔防风控
+- 一键打卡会自动对所有配置的群组打卡，可设置间隔防风控
 - 每日只能打卡一次，重复打卡会提示"今日已打卡"
 - 异常情况（打卡失败、任务错误）会强制通知管理员
-- 支持两种通知模式：实时成功通知 或 每日定时报告（配置文件设置）
-- 所有操作都有详细日志记录
+- 支持两种通知模式：实时成功通知 或 每日定时报告
+- 仅适用于NapCat平台
 """
         yield event.plain_result(help_text)
 

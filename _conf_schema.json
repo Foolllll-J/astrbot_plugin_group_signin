@@ -13,7 +13,7 @@
     },
     "batch_signin_interval": {
         "description": "批量打卡间隔秒数",
-        "hint": "一键打卡和定时任务执行时，每个群之间的间隔时间。",
+        "hint": "一键打卡和定时任务执行时，打卡每个群之间的间隔时间。",
         "type": "int",
         "default": 2
     }

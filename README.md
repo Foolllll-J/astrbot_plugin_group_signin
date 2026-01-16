@@ -1,27 +1,35 @@
-# ✅ QQ群打卡助手
+<div align="center">
 
-![License](https://img.shields.io/badge/license-GPL--3.0-green)
-![Python](https://img.shields.io/badge/python-3.10+-yellow.svg)
-![AstrBot](https://img.shields.io/badge/framework-AstrBot-blue)
+# ✅ QQ 群打卡助手
 
-一款为 [AstrBot](https://github.com/AstrBotDevs/AstrBot) 设计的QQ群打卡插件，支持定时打卡、一键打卡、智能通知和详细的统计功能。
+<i>🌟 每日打卡，轻松拿捏</i>
+
+![License](https://img.shields.io/badge/license-GPL--3.0-green?style=flat-square)
+![Python](https://img.shields.io/badge/python-3.10+-blue?style=flat-square&logo=python&logoColor=white)
+![AstrBot](https://img.shields.io/badge/framework-AstrBot-ff6b6b?style=flat-square)
+
+</div>
+
+## ✨ 简介
+
+一款为 [**AstrBot**](https://github.com/AstrBotDevs/AstrBot) 设计的 QQ 群打卡插件，支持定时打卡、一键打卡、智能通知和详细的统计功能。
 
 > ⚠️ **注意**：本插件仅适用于 NapCat 平台
 
 ---
 
-## ✨ 功能特性
+## 🛠️ 功能特性
 
-* **🎯 简化配置**: 使用简单的时分格式设置定时任务，每日固定执行
-* **⚡ 一键打卡**: 对所有配置群组一次性打卡，自动间隔防风控
-* **🔔 智能通知**: 支持成功通知和每日报告两种模式
-* **📊 详细统计**: 记录总计和每日打卡数据
-* **🛡️ 防重复**: 每日只能打卡一次，重复打卡会提示"今日已打卡"
-* **🔒 权限管理**: 所有指令仅限Bot管理员使用
+* **🎯 简化配置**: 使用简单的时分格式设置定时任务，每日固定执行。
+* **⚡ 一键打卡**: 对所有配置群组一次性打卡，自动间隔防风控。
+* **🔔 智能通知**: 支持成功通知和每日报告两种模式。
+* **📊 详细统计**: 记录总计和每日打卡数据。
+* **🛡️ 防重复**: 每日只能打卡一次，重复打卡会提示"今日已打卡"。
+* **🔒 权限管理**: 所有指令仅限 Bot 管理员使用。
 
 ---
 
-## 📖 使用指南
+## 🎮 指令说明
 
 ### 🎯 打卡指令
 
@@ -63,7 +71,7 @@
 /添加打卡 09:00 123456789
 ```
 
-每天9点为群 123456789 打卡。
+每天 9 点为群 123456789 打卡。
 
 **查看定时任务**:
 
@@ -83,7 +91,7 @@
 
 ---
 
-### 📊 统计信息
+### 📊 统计与帮助
 
 **查看统计**:
 
@@ -97,9 +105,7 @@
 - 今日统计（当日打卡情况）
 - 配置信息（定时任务数、通知设置）
 
----
-
-### ❓ 帮助
+**获取帮助**:
 
 ```
 /打卡帮助
@@ -107,12 +113,28 @@
 
 显示详细的使用说明。
 
+---
 
+## 📅 更新日志
+
+**v1.0**
+
+- 初始版本发布。
+- 支持定时打卡和手动打卡。
+- 提供打卡统计和通知功能。
 
 ---
 
 ## ❤️ 支持
 
 * [AstrBot 帮助文档](https://astrbot.app)
-* 如果您在使用中遇到问题，欢迎提交 [Issue](https://github.com/yourusername/astrbot_plugin_group_signin/issues)
+* 如果您在使用中遇到问题，欢迎在本仓库提交 [Issue](https://github.com/Foolllll-J/astrbot_plugin_group_signin/issues)。
+
+---
+
+<div align="center">
+
+**如果本插件对你有帮助，欢迎点个 ⭐ Star 支持一下！**
+
+</div>
 
